@@ -1,5 +1,8 @@
 package lux.task.jface;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.jface.viewers.TableViewer;
@@ -52,10 +55,11 @@ public class StudentTable extends TableViewer {
             public void update(ViewerCell cell) {
                 TableItem item = (TableItem) cell.getItem();
                 Button button = new Button((Composite) cell.getViewerRow().getControl(), SWT.CHECK);
+                button.setSelection(true);
                 TableEditor editor = new TableEditor(item.getParent());
                 editor.grabHorizontal  = true;
                 editor.grabVertical = true;
-                editor.setEditor(button , item, cell.getColumnIndex());
+                editor.setEditor(button, item, cell.getColumnIndex());
                 editor.layout();
             }
         });
@@ -71,7 +75,7 @@ public class StudentTable extends TableViewer {
                 TableEditor editor = new TableEditor(item.getParent());
                 editor.grabHorizontal  = true;
                 editor.grabVertical = true;
-                editor.setEditor(button , item, cell.getColumnIndex());
+                editor.setEditor(button, item, cell.getColumnIndex());
                 editor.layout();
             }
         });
@@ -82,7 +86,6 @@ public class StudentTable extends TableViewer {
 				for (TableColumn c : getTable().getColumns()) {
 					c.pack();
 				}
-				
 			}        	
         });        	
 	}
