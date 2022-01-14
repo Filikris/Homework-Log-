@@ -12,24 +12,136 @@ import org.eclipse.swt.custom.SashForm;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Shell;
 
 public class Main extends ApplicationWindow {
+	private Action quitAction;
+	private Action selectAction;
+	private Action newAction;
+	private Action saveAction;
+	private Action deleteAction;
+	private Action cancelAction;
+	private Action aboutAction;
 
 	  public Main() {	    
 		  super(null);
 
-		  createMenu();
+		  createActions();
+		  
+		  addMenuBar();
+	  }
+	  
+	  @Override
+	  protected void configureShell(Shell shell) {
+	    super.configureShell(shell);
+	    
+	    shell.setText("JFace homework log");
 	  }
 
+	  @Override
 	  protected Control createContents(Composite parent) {
-		  getShell().setText("JFace homework log");
-
 		  SashForm mainPane = new SashForm(parent, SWT.HORIZONTAL);
 		  
 		  StudentTable table = new StudentTable(mainPane,SWT.BORDER | SWT.FULL_SELECTION);
 		  
-		  Student one = new Student();
-		  one.setName("Yaroslav");
+		  table.setInput(loadData());
+
+		  StudentPanel panel = new StudentPanel(mainPane, SWT.NONE);
+
+		  parent.pack();
+	    
+		  return parent;
+	  }
+	  
+	@Override
+	protected MenuManager createMenuManager() {
+	    MenuManager manager = new MenuManager();
+	    
+	    manager.add(createFileMenuManager());
+	    manager.add(createEditMenuManager());
+	    manager.add(createHelpMenuManager());
+	    
+	    return manager;
+	}
+    
+    private MenuManager createFileMenuManager () {
+        MenuManager manager = new MenuManager("&File");
+    
+        manager.add(selectAction);
+        manager.add(new Separator());
+        manager.add(quitAction);
+    
+        return manager;
+    }
+    
+    private MenuManager createEditMenuManager () {
+        MenuManager manager = new MenuManager("&Edit");
+    
+        manager.add(newAction);
+        manager.add(saveAction);
+        manager.add(new Separator());
+        manager.add(deleteAction);
+        manager.add(cancelAction);
+    
+        return manager;
+    }
+    
+    private MenuManager createHelpMenuManager () {
+        MenuManager manager = new MenuManager("&Help");
+    
+        manager.add(aboutAction);
+    
+        return manager;
+    }
+    
+    private void createActions() {
+        quitAction = new Action("&Quit") {
+            public void run () {
+                close ();
+            }
+        };
+        quitAction.setAccelerator (SWT.CTRL + 'Q');
+        
+        selectAction = new Action("&Select...") {
+        	public void run () {
+        		//TODO
+        	}
+        };
+        
+        newAction = new Action("&New") {
+        	public void run () {
+        		//TODO
+        	}
+        };
+        
+        saveAction = new Action("&Save") {
+        	public void run () {
+        		//TODO
+        	}
+        };
+        
+        deleteAction = new Action("&Delete") {
+        	public void run () {
+        		//TODO
+        	}
+        };
+        
+        cancelAction = new Action("&Cancel") {
+        	public void run () {
+        		//TODO
+        	}
+        };
+        
+        aboutAction = new Action("&About") {
+        	public void run () {
+        		//TODO
+        	}
+        };
+    }
+    
+    private List<Student> loadData() {
+    	Student one = new Student();
+		one.setName("Yaroslav");
 		  one.setGroup("1");
 		  
 		  Student two = new Student();
@@ -40,68 +152,9 @@ public class Main extends ApplicationWindow {
 		  students.add(one);
 		  students.add(two);
 		  
-		  table.setInput(students);
-		 		  
-
-		  StudentPanel panel = new StudentPanel(mainPane, SWT.NONE);
-
-		  parent.pack();
-	    
-		  return parent;
-	  }
-	  
-	  private void createMenu() {
-		  addMenuBar();
-		  
-		  MenuManager fileMenu = new MenuManager("&File");
-		  getMenuBarManager().add(fileMenu);
-		  fileMenu.add(new Separator());
-		  fileMenu.add(new Action("&Select ..."){
-			  
-			  @Override
-			  public void run() {
-				  //TODO
-			  }
-		  });
-		  
-		  MenuManager editMenu = new MenuManager("&Edit");
-		  getMenuBarManager().add(editMenu);
-		  editMenu.add(new Separator());
-		  editMenu.add(new Action("&New"){
-			  @Override
-			  public void run() {
-				  //TODO
-			  }
-		  });
-		  editMenu.add(new Action("&Save"){	  
-			  @Override
-			  public void run() {
-				  //TODO
-			  }
-		  });
-		  editMenu.add(new Action("&Delete"){  
-			  @Override
-			  public void run() {
-				  //TODO
-			  }
-		  });
-		  editMenu.add(new Action("&Cancel"){ 
-			  @Override
-			  public void run() {
-				  //TODO
-			  }
-		  });
-
-		  MenuManager helpMenu = new MenuManager("&Help");
-		  getMenuBarManager().add(helpMenu);
-		  helpMenu.add(new Separator());
-		  helpMenu.add(new Action("&About") {
-			  @Override
-			  public void run() {
-				  //TODO
-			  }
-		  });  
-	  }
+		  return students;
+    	
+    }
 
 	  public static void main(String[] args) {
 		  Main awin = new Main();	    

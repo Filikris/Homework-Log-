@@ -63,22 +63,6 @@ public class StudentTable extends TableViewer {
                 editor.layout();
             }
         });
-        
-        TableViewerColumn deleteCol = new TableViewerColumn(this, SWT.LEFT, 3);
-        deleteCol.getColumn().setWidth(100);
-        deleteCol.setLabelProvider(new ColumnLabelProvider(){
-            @Override
-            public void update(ViewerCell cell) {
-                TableItem item = (TableItem) cell.getItem();
-                Button button = new Button((Composite) cell.getViewerRow().getControl(), SWT.NONE);
-                button.setText("Delete");
-                TableEditor editor = new TableEditor(item.getParent());
-                editor.grabHorizontal  = true;
-                editor.grabVertical = true;
-                editor.setEditor(button, item, cell.getColumnIndex());
-                editor.layout();
-            }
-        });
                 
         this.getTable().addListener(SWT.Resize, new Listener() {
         	
@@ -87,6 +71,8 @@ public class StudentTable extends TableViewer {
 					c.pack();
 				}
 			}        	
-        });        	
+        }); 
+        
+
 	}
 }

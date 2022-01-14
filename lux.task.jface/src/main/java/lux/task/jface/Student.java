@@ -3,7 +3,7 @@ package lux.task.jface;
 public class Student {
 	private String name;
     private String group;
-    private Boolean taskDone;
+    private boolean isDone;
 
     Student(){}
     
@@ -15,8 +15,8 @@ public class Student {
         return group;
     }
     
-    public Boolean getTaskDone() {
-    	return taskDone;
+    public boolean isDone() {
+    	return isDone;
     }
 
     public void setName(String name) {
@@ -27,8 +27,8 @@ public class Student {
         this.group = group;
     }
     
-    public void setTaskDone(Boolean done) {
-    	taskDone = done;
+    public void setIsDone(boolean done) {
+    	isDone = done;
     }
 
 }
