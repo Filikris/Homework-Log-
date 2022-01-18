@@ -6,11 +6,14 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
+import org.eclipse.swt.widgets.Listener;
+
 public class StudentList {
 
     private List<Student> students = new ArrayList<Student>();
-    private Set changeListeners = new HashSet();
+    private Set<IStudentListListener> changeListeners = new HashSet<>();
     private static final String[] STUDENTS_ARRAY = { "?", "Nancy", "Larry", "Joe" };
+    private Student selectedStudent;
 
     public StudentList() {
 	this.initData();
@@ -33,30 +36,33 @@ public class StudentList {
     public void addStudent() {
 	Student student = new Student();
 	students.add(students.size(), student);
-	Iterator iterator = changeListeners.iterator();
-	while (iterator.hasNext())
-	    ((IStudentListViewer) iterator.next()).addStudent(student);
+	changeListeners.forEach(l -> l.studentAdded(student));
     }
 
     public void removeStudent(Student student) {
 	students.remove(student);
-	Iterator iterator = changeListeners.iterator();
-	while (iterator.hasNext())
-	    ((IStudentListViewer) iterator.next()).removeStudent(student);
+	changeListeners.forEach(l -> l.studentRemoved(student));
     }
 
     public void studentChanged(Student student) {
-	Iterator iterator = changeListeners.iterator();
-	while (iterator.hasNext())
-	    ((IStudentListViewer) iterator.next()).updateStudent(student);
+	changeListeners.forEach(l -> l.studentUpdated(student));
     }
 
-    public void removeChangeListener(IStudentListViewer viewer) {
-	changeListeners.remove(viewer);
+    public void removeChangeListener(IStudentListListener listener) {
+	changeListeners.remove(listener);
     }
 
-    public void addChangeListener(IStudentListViewer viewer) {
-	changeListeners.add(viewer);
+    public void addChangeListener(IStudentListListener listener) {
+	changeListeners.add(listener);
+    }
+    
+    public void selectStudent(Student student) {
+	selectedStudent = student;
+	
+    }
+    
+    public Student getSelected() {
+	return selectedStudent;
     }
 
 }

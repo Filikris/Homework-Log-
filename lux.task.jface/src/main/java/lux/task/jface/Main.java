@@ -22,6 +22,7 @@ public class Main extends ApplicationWindow {
     private Action deleteAction;
     private Action cancelAction;
     private Action aboutAction;
+    private StudentList studentList = new StudentList();
 
     public Main() {
 	super(null);
@@ -43,11 +44,9 @@ public class Main extends ApplicationWindow {
 	SashForm mainPane = new SashForm(parent, SWT.HORIZONTAL);
 
 	StudentTable table = new StudentTable(mainPane, SWT.BORDER | SWT.FULL_SELECTION);
+	table.setInput(studentList);
 
-	//table.setInput(loadData());
-
-
-	StudentPanel panel = new StudentPanel(mainPane, SWT.NONE);
+	new StudentPanel(mainPane, SWT.NONE, studentList);
 
 	parent.pack();
 
@@ -110,9 +109,8 @@ public class Main extends ApplicationWindow {
 	};
 
 	newAction = new Action("&New") {
-	    public void run() {
-		
-		// TODO
+	    public void run() {	
+		studentList.addStudent();
 	    }
 	};
 
@@ -140,23 +138,23 @@ public class Main extends ApplicationWindow {
 	    }
 	};
     }
-
-    private List<Student> loadData() {
-	Student one = new Student();
-	one.setName("Yaroslav");
-	one.setGroup("1");
-
-	Student two = new Student();
-	two.setName("Kristina");
-	two.setGroup("7");
-
-	List<Student> students = new ArrayList<Student>();
-	students.add(one);
-	students.add(two);
-
-	return students;
-
-    }
+//
+//    private List<Student> loadData() {
+//	Student one = new Student();
+//	one.setName("Yaroslav");
+//	one.setGroup("1");
+//
+//	Student two = new Student();
+//	two.setName("Kristina");
+//	two.setGroup("7");
+//
+//	List<Student> students = new ArrayList<Student>();
+//	students.add(one);
+//	students.add(two);
+//
+//	return students;
+//
+//    }
 
     public static void main(String[] args) {
 	Main awin = new Main();

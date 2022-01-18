@@ -8,6 +8,7 @@ import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.jface.viewers.ILabelProviderListener;
 import org.eclipse.jface.viewers.IStructuredContentProvider;
 import org.eclipse.jface.viewers.ITableLabelProvider;
+import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TableViewerColumn;
 import org.eclipse.jface.viewers.Viewer;
@@ -20,22 +21,41 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
+import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.TableItem;
+import org.eclipse.jface.viewers.IStructuredSelection;
 
-public class StudentTable extends TableViewer {
-
-    private StudentList studentList = new StudentList();
+public class StudentTable extends TableViewer {   
 
     public StudentTable(Composite parent, int style) {
 	super(parent, style);
+	Table table = getTable();
 
-	this.getTable().setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
-	this.getTable().setHeaderVisible(true);
-	this.getTable().setLinesVisible(true);
-	this.setContentProvider(new StudentContentProvider());
-	this.setInput(studentList);
+	table.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+	table.setHeaderVisible(true);
+	table.setLinesVisible(true);
 
+	createColumns();
+
+	setContentProvider(new StudentContentProvider());
+	
+	this.addSelectionChangedListener((SelectionChangedEvent event) -> {
+	    Student student = (Student) ((IStructuredSelection) getSelection()).getFirstElement();
+	    ((StudentList) getInput()).selectStudent(student);
+	});
+
+	table.addListener(SWT.Resize, new Listener() {
+
+	    public void handleEvent(final Event event) {
+		for (TableColumn c : getTable().getColumns()) {
+		    c.pack();
+		}
+	    }
+	});
+    }
+
+    private void createColumns() {
 	TableViewerColumn nameCol = new TableViewerColumn(this, SWT.LEFT, 0);
 	nameCol.getColumn().setText("Name");
 	nameCol.setLabelProvider(new ColumnLabelProvider() {
@@ -72,22 +92,12 @@ public class StudentTable extends TableViewer {
 		editor.layout();
 	    }
 	});
-
-	this.getTable().addListener(SWT.Resize, new Listener() {
-
-	    public void handleEvent(final Event event) {
-		for (TableColumn c : getTable().getColumns()) {
-		    c.pack();
-		}
-	    }
-	});
-
     }
 
-    class StudentContentProvider implements IStructuredContentProvider, IStudentListViewer {
+    class StudentContentProvider implements IStructuredContentProvider, IStudentListListener {
 
 	public Object[] getElements(Object inputElement) {
-	    return studentList.getStudents().toArray();
+	    return ((StudentList) inputElement).getStudents().toArray();
 	}
 
 	public void inputChanged(Viewer v, Object oldInput, Object newInput) {
@@ -98,18 +108,18 @@ public class StudentTable extends TableViewer {
 	}
 
 	public void dispose() {
-	    studentList.removeChangeListener(this);
+	    ((StudentList) getInput()).removeChangeListener(this);
 	}
 
-	public void addStudent(Student student) {
+	public void studentAdded(Student student) {
 	    add(student);
 	}
 
-	public void removeStudent(Student student) {
+	public void studentRemoved(Student student) {
 	    remove(student);
 	}
 
-	public void updateStudent(Student student) {
+	public void studentUpdated(Student student) {
 	    update(student, null);
 	}
 
