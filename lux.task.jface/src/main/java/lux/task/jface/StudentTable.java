@@ -5,11 +5,16 @@ import java.util.List;
 
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
+import org.eclipse.jface.viewers.ILabelProviderListener;
+import org.eclipse.jface.viewers.IStructuredContentProvider;
+import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TableViewerColumn;
+import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.viewers.ViewerCell;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.TableEditor;
+import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
@@ -19,13 +24,17 @@ import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.TableItem;
 
 public class StudentTable extends TableViewer {
+
+    private StudentList studentList = new StudentList();
+
     public StudentTable(Composite parent, int style) {
 	super(parent, style);
 
 	this.getTable().setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 	this.getTable().setHeaderVisible(true);
 	this.getTable().setLinesVisible(true);
-	this.setContentProvider(new ArrayContentProvider());
+	this.setContentProvider(new StudentContentProvider());
+	this.setInput(studentList);
 
 	TableViewerColumn nameCol = new TableViewerColumn(this, SWT.LEFT, 0);
 	nameCol.getColumn().setText("Name");
@@ -74,4 +83,36 @@ public class StudentTable extends TableViewer {
 	});
 
     }
+
+    class StudentContentProvider implements IStructuredContentProvider, IStudentListViewer {
+
+	public Object[] getElements(Object inputElement) {
+	    return studentList.getStudents().toArray();
+	}
+
+	public void inputChanged(Viewer v, Object oldInput, Object newInput) {
+	    if (newInput != null)
+		((StudentList) newInput).addChangeListener(this);
+	    if (oldInput != null)
+		((StudentList) oldInput).removeChangeListener(this);
+	}
+
+	public void dispose() {
+	    studentList.removeChangeListener(this);
+	}
+
+	public void addStudent(Student student) {
+	    add(student);
+	}
+
+	public void removeStudent(Student student) {
+	    remove(student);
+	}
+
+	public void updateStudent(Student student) {
+	    update(student, null);
+	}
+
+    }
+
 }

@@ -44,7 +44,8 @@ public class Main extends ApplicationWindow {
 
 	StudentTable table = new StudentTable(mainPane, SWT.BORDER | SWT.FULL_SELECTION);
 
-	table.setInput(loadData());
+	//table.setInput(loadData());
+
 
 	StudentPanel panel = new StudentPanel(mainPane, SWT.NONE);
 
@@ -110,6 +111,7 @@ public class Main extends ApplicationWindow {
 
 	newAction = new Action("&New") {
 	    public void run() {
+		
 		// TODO
 	    }
 	};
