@@ -1,9 +1,7 @@
 package lux.task.jface;
 
-import org.eclipse.jface.viewers.IStructuredSelection;
+import org.eclipse.jface.action.ActionContributionItem;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.SelectionAdapter;
-import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
@@ -12,8 +10,12 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 
 public class StudentPanel extends Composite {
+    private Student student;
+    private Text nameText;
+    private Text groupText;
+    private Button taskDone;
 
-    public StudentPanel(Composite parent, int style, StudentList studentList) {
+    public StudentPanel(Composite parent, int style, StudentList studentList, IStudentActionProvider provider) {
 	super(parent, style);
 
 	this.setLayout(new GridLayout(4, false));
@@ -22,68 +24,90 @@ public class StudentPanel extends Composite {
 	Label nameLabel = new Label(this, SWT.LEFT);
 	nameLabel.setText("Name");
 	nameLabel.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
-	Text nameText = new Text(this, SWT.SINGLE | SWT.BORDER);
+	nameText = new Text(this, SWT.SINGLE | SWT.BORDER);
 	GridData gridData = new GridData(GridData.HORIZONTAL_ALIGN_FILL);
 	gridData.horizontalSpan = 3;
 	nameText.setLayoutData(gridData);
 	Label groupLabel = new Label(this, SWT.LEFT);
 	groupLabel.setText("Group");
 	groupLabel.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
-	Text groupText = new Text(this, SWT.SINGLE | SWT.BORDER);
+	groupText = new Text(this, SWT.SINGLE | SWT.BORDER);
 	gridData = new GridData(GridData.HORIZONTAL_ALIGN_FILL);
 	gridData.horizontalSpan = 3;
 	groupText.setLayoutData(gridData);
 
-	Button taskDone = new Button(this, SWT.CHECK);
+	taskDone = new Button(this, SWT.CHECK);
 	taskDone.setText("SWT task done");
 	gridData = new GridData(GridData.HORIZONTAL_ALIGN_FILL);
 	gridData.horizontalSpan = 4;
 	taskDone.setLayoutData(gridData);
 
-	Button addNew = new Button(this, SWT.NONE);
-	addNew.setText("New");
+	ActionContributionItem item = new ActionContributionItem(provider.getAction(StudentAction.NEW));
+	item.fill(this);
+	Button addNew = (Button) item.getWidget();
 	addNew.setLayoutData(new GridData(GridData.HORIZONTAL_ALIGN_CENTER));
-	addNew.addSelectionListener(new SelectionAdapter() {
-	    public void widgetSelected(SelectionEvent e) {
-		nameText.setText("");
-		groupText.setText("");
-		taskDone.setSelection(false);
-	    }
-	});
 
-	Button save = new Button(this, SWT.NONE);
-	save.setText("Save");
+	item = new ActionContributionItem(provider.getAction(StudentAction.SAVE));
+	item.fill(this);
+	Button save = (Button) item.getWidget();
 	save.setLayoutData(new GridData(GridData.HORIZONTAL_ALIGN_CENTER));
-	save.addSelectionListener(new SelectionAdapter() {
-	    public void widgetSelected(SelectionEvent e) {
-		Student student = studentList.getSelected();
-		if(student == null) {
-		    studentList.addStudent();
-		} else {
-		    student.setName(nameText.getText());
-		    student.setGroup(groupText.getText());
-		    student.setIsDone(taskDone.getSelection());		    
-		    studentList.studentChanged(student);
-		}
-	    }
-	});
 
-	Button delete = new Button(this, SWT.NONE);
-	delete.setText("Delete");
+	item = new ActionContributionItem(provider.getAction(StudentAction.DELETE));
+	item.fill(this);
+	Button delete = (Button) item.getWidget();
 	delete.setLayoutData(new GridData(GridData.HORIZONTAL_ALIGN_CENTER));
-	delete.addSelectionListener(new SelectionAdapter() {
 
-	    public void widgetSelected(SelectionEvent e) {
-		Student student = studentList.getSelected();
-		if (student != null) {
-		    studentList.removeStudent(student);
-		}
-	    }
-	});
-
-	Button cancel = new Button(this, SWT.NONE);
-	cancel.setText("Cancel");
+	item = new ActionContributionItem(provider.getAction(StudentAction.CANCEL));
+	item.fill(this);
+	Button cancel = (Button) item.getWidget();
 	cancel.setLayoutData(new GridData(GridData.HORIZONTAL_ALIGN_CENTER));
+    }
+
+    public void setStudent(Student student) {
+	this.student = student;
+	if (student == null) {
+	    nameText.setText("");
+	    groupText.setText("");
+	    taskDone.setSelection(false);
+	} else {
+	    nameText.setText(student.getName());
+	    groupText.setText(student.getGroup());
+	    taskDone.setSelection(student.isTaskDone());
+	}
+    }
+
+    public boolean isChanged() {
+	if(student == null) {
+	    return false;
+	}
+	if(!nameText.getText().equals(student.getName())) {
+	    return true;
+	}
+	if(!groupText.getText().equals(student.getGroup())) {
+	    return true;
+	}
+	if(taskDone.getSelection() != student.isTaskDone()) {
+	    return true;
+	}
+	return false;
+    }
+
+    public Student getStudent() {
+	return student;
+    }
+
+    public void applyChanges() {
+	student.setName(nameText.getText());
+	student.setGroup(groupText.getText());
+	student.setIsTaskDone(taskDone.getSelection());
+
+    }
+
+    public void cancelChanges() {
+	nameText.setText("");
+	groupText.setText("");
+	taskDone.setSelection(false);
+
     }
 
 }

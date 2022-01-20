@@ -1,20 +1,20 @@
 package lux.task.jface;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.Separator;
+import org.eclipse.jface.viewers.IStructuredSelection;
+import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.window.ApplicationWindow;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.SashForm;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
 
-public class Main extends ApplicationWindow {
+public class Main extends ApplicationWindow implements IStudentActionProvider {
     private Action quitAction;
     private Action selectAction;
     private Action newAction;
@@ -23,6 +23,7 @@ public class Main extends ApplicationWindow {
     private Action cancelAction;
     private Action aboutAction;
     private StudentList studentList = new StudentList();
+    private StudentPanel panel;
 
     public Main() {
 	super(null);
@@ -46,7 +47,14 @@ public class Main extends ApplicationWindow {
 	StudentTable table = new StudentTable(mainPane, SWT.BORDER | SWT.FULL_SELECTION);
 	table.setInput(studentList);
 
-	new StudentPanel(mainPane, SWT.NONE, studentList);
+	panel = new StudentPanel(mainPane, SWT.NONE, studentList, this);
+
+	table.addSelectionChangedListener((SelectionChangedEvent event) -> {
+	    promptSaveChanges();
+
+	    Student student = (Student) ((IStructuredSelection) event.getSelection()).getFirstElement();
+	    panel.setStudent(student);
+	});
 
 	parent.pack();
 
@@ -109,26 +117,27 @@ public class Main extends ApplicationWindow {
 	};
 
 	newAction = new Action("&New") {
-	    public void run() {	
-		studentList.addStudent();
+	    public void run() {
+		panel.setStudent(studentList.create());
 	    }
 	};
 
 	saveAction = new Action("&Save") {
 	    public void run() {
-		// TODO
+		panel.applyChanges();
+		studentList.saveStudent(panel.getStudent());
 	    }
 	};
 
 	deleteAction = new Action("&Delete") {
 	    public void run() {
-		// TODO
+		studentList.removeStudent(panel.getStudent());
 	    }
 	};
 
 	cancelAction = new Action("&Cancel") {
 	    public void run() {
-		// TODO
+		panel.cancelChanges();
 	    }
 	};
 
@@ -138,23 +147,15 @@ public class Main extends ApplicationWindow {
 	    }
 	};
     }
-//
-//    private List<Student> loadData() {
-//	Student one = new Student();
-//	one.setName("Yaroslav");
-//	one.setGroup("1");
-//
-//	Student two = new Student();
-//	two.setName("Kristina");
-//	two.setGroup("7");
-//
-//	List<Student> students = new ArrayList<Student>();
-//	students.add(one);
-//	students.add(two);
-//
-//	return students;
-//
-//    }
+
+    private void promptSaveChanges() {
+	if (panel.isChanged()) {
+	    MessageBox msg = new MessageBox(getShell(), SWT.ICON_QUESTION | SWT.YES | SWT.NO);
+	    msg.setMessage("Wanna save your changes?");
+	    System.out.println(msg.open());
+	}
+
+    }
 
     public static void main(String[] args) {
 	Main awin = new Main();
@@ -162,5 +163,28 @@ public class Main extends ApplicationWindow {
 	awin.open();
 
 	Display.getCurrent().dispose();
+    }
+
+    @Override
+    public Action getAction(StudentAction key) {
+	if (key == StudentAction.SELECT) {
+	    return selectAction;
+	}
+	if (key == StudentAction.NEW) {
+	    return newAction;
+	}
+	if (key == StudentAction.SAVE) {
+	    return saveAction;
+	}
+	if (key == StudentAction.DELETE) {
+	    return deleteAction;
+	}
+	if (key == StudentAction.CANCEL) {
+	    return cancelAction;
+	}
+	if (key == StudentAction.ABOUT) {
+	    return aboutAction;
+	}
+	return null;
     }
 }
