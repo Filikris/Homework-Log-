@@ -112,12 +112,15 @@ public class Main extends ApplicationWindow implements IStudentActionProvider {
 
 	selectAction = new Action("&Select...") {
 	    public void run() {
+		promptSaveChanges();
 		// TODO
 	    }
 	};
 
 	newAction = new Action("&New") {
 	    public void run() {
+		promptSaveChanges();
+
 		panel.setStudent(studentList.create());
 	    }
 	};
@@ -131,6 +134,8 @@ public class Main extends ApplicationWindow implements IStudentActionProvider {
 
 	deleteAction = new Action("&Delete") {
 	    public void run() {
+		promptSaveChanges();
+
 		studentList.removeStudent(panel.getStudent());
 	    }
 	};
@@ -143,6 +148,7 @@ public class Main extends ApplicationWindow implements IStudentActionProvider {
 
 	aboutAction = new Action("&About") {
 	    public void run() {
+
 		// TODO
 	    }
 	};
@@ -152,7 +158,10 @@ public class Main extends ApplicationWindow implements IStudentActionProvider {
 	if (panel.isChanged()) {
 	    MessageBox msg = new MessageBox(getShell(), SWT.ICON_QUESTION | SWT.YES | SWT.NO);
 	    msg.setMessage("Wanna save your changes?");
-	    System.out.println(msg.open());
+	    if (msg.open() == SWT.YES) {
+		panel.applyChanges();
+		studentList.saveStudent(panel.getStudent());
+	    }
 	}
 
     }
