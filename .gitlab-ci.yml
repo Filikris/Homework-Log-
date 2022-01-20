@@ -1,0 +1,30 @@
+image: maven:3-jdk-11
+
+stages:
+  - build
+  - test
+
+variables:
+  MAVEN_OPTS: "-Dmaven.repo.local=$CI_PROJECT_DIR/.m2/repository -Dmaven.artifact.threads=50"
+  MAVEN_CLI_OPTS: "--batch-mode --errors --show-version"
+
+cache:
+  paths:
+    - .m2/repository/
+  key: "$CI_BUILD_REF_NAME"
+
+build-job:
+  stage: build
+  script:
+    - echo "Compiling the code..."
+    - cd lux.task.jface
+    - mvn $MAVEN_CLI_OPTS compile
+    - echo "Compile complete."
+
+test-job:
+  stage: test
+  script:
+    - echo "Testing the code..."
+    - cd lux.task.jface
+    - mvn $MAVEN_CLI_OPTS test
+    - echo "Testing complete."
