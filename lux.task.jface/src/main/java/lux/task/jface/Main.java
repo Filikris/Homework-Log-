@@ -1,5 +1,10 @@
 package lux.task.jface;
 
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.Separator;
@@ -11,8 +16,10 @@ import org.eclipse.swt.custom.SashForm;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
+import org.eclipse.swt.widgets.TableItem;
 
 public class Main extends ApplicationWindow implements IStudentActionProvider {
     private Action quitAction;
@@ -24,6 +31,7 @@ public class Main extends ApplicationWindow implements IStudentActionProvider {
     private Action aboutAction;
     private StudentList studentList = new StudentList();
     private StudentPanel panel;
+    private StudentTable table;
 
     public Main() {
 	super(null);
@@ -44,7 +52,7 @@ public class Main extends ApplicationWindow implements IStudentActionProvider {
     protected Control createContents(Composite parent) {
 	SashForm mainPane = new SashForm(parent, SWT.HORIZONTAL);
 
-	StudentTable table = new StudentTable(mainPane, SWT.BORDER | SWT.FULL_SELECTION);
+	table = new StudentTable(mainPane, SWT.BORDER | SWT.FULL_SELECTION);
 	table.setInput(studentList);
 
 	panel = new StudentPanel(mainPane, SWT.NONE, studentList, this);
@@ -113,7 +121,41 @@ public class Main extends ApplicationWindow implements IStudentActionProvider {
 	selectAction = new Action("&Select...") {
 	    public void run() {
 		promptSaveChanges();
-		// TODO
+
+		FileDialog dialog = new FileDialog(getShell(), SWT.SAVE);
+		dialog.setFilterNames(new String[] { "CSV Files", "All Files (*.*)" });
+		dialog.setFilterExtensions(new String[] { "*.csv", "*.*" });
+		String filePath = dialog.open();
+		if (filePath == null) {
+		    return;
+		}
+
+		File fileToSave = new File(filePath);
+		System.out.println("Save as file: " + fileToSave.getAbsolutePath());
+
+		try (FileWriter fw = new FileWriter(fileToSave); BufferedWriter bw = new BufferedWriter(fw)) {
+
+		   String [] titles = {"Name", "Group", "SWT Done"};
+		    for (String title : titles) {
+			bw.write(title);
+			bw.write("\t");
+		    }
+		    bw.newLine();
+
+		    for (TableItem item : table.getTable().getItems()) {
+			bw.write(item.getText(0));
+			bw.write("\t");
+			bw.write(item.getText(1));
+			bw.write("\t");
+			bw.write(item.getText(2));
+			bw.write("\t");
+			bw.newLine();
+		    }
+		} catch (IOException ex) {
+		    MessageBox msg = new MessageBox(getShell(), SWT.ICON_ERROR);
+		    msg.setMessage("Error");
+		    msg.open();
+		}
 	    }
 	};
 
