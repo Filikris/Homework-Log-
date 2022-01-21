@@ -135,7 +135,7 @@ public class Main extends ApplicationWindow implements IStudentActionProvider {
 
 		try (FileWriter fw = new FileWriter(fileToSave); BufferedWriter bw = new BufferedWriter(fw)) {
 
-		   String [] titles = {"Name", "Group", "SWT Done"};
+		    String[] titles = { "Name", "Group", "SWT Done" };
 		    for (String title : titles) {
 			bw.write(title);
 			bw.write("\t");
@@ -191,7 +191,9 @@ public class Main extends ApplicationWindow implements IStudentActionProvider {
 	aboutAction = new Action("&About") {
 	    public void run() {
 
-		// TODO
+		MessageBox msg = new MessageBox(getShell(), SWT.ICON_INFORMATION);
+		msg.setMessage("Created by Kristina and Andrey");
+		msg.open();
 	    }
 	};
     }

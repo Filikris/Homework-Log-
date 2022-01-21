@@ -9,7 +9,7 @@ public class StudentList {
 
     private HashMap<Integer, Student> students = new HashMap<Integer, Student>();
     private Set<IStudentListListener> changeListeners = new HashSet<>();
-    private static final String[] STUDENTS_ARRAY = { "?", "Nancy", "Larry", "Joe" };
+    private static final String[] STUDENTS_ARRAY = { "Nancy", "Larry", "Joe" };
     private int nextId = 0;
 
     public StudentList() {
@@ -18,7 +18,7 @@ public class StudentList {
 
     private void initData() {
 	Student student;
-	for (int i = 0; i < 10; i++) {
+	for (int i = 0; i < 5; i++) {
 	    student = new Student(nextId++);
 	    student.setName(STUDENTS_ARRAY[i % 3]);
 	    student.setGroup("Group " + i);
