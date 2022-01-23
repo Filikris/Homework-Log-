@@ -19,32 +19,31 @@ public class StudentPanel extends Composite {
     public StudentPanel(Composite parent, int style, StudentList studentList, IStudentActionProvider provider) {
 	super(parent, style);
 
-	this.setLayout(new GridLayout(3, false));
-	this.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+	this.setLayout(new GridLayout(2, false));
 
 	Label nameLabel = new Label(this, SWT.LEFT);
-	nameLabel.setText("Name");
-	nameLabel.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
+	nameLabel.setText("Name : ");
+	nameLabel.setLayoutData(new GridData(GridData.HORIZONTAL_ALIGN_FILL));
 	nameText = new Text(this, SWT.SINGLE | SWT.BORDER);
-	GridData gridData = new GridData(GridData.HORIZONTAL_ALIGN_FILL);
-	gridData.horizontalSpan = 2;
+	GridData gridData = new GridData(GridData.FILL_HORIZONTAL);
 	nameText.setLayoutData(gridData);
 	Label groupLabel = new Label(this, SWT.LEFT);
-	groupLabel.setText("Group");
-	groupLabel.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
+	groupLabel.setText("Group : ");
+	groupLabel.setLayoutData(new GridData(GridData.HORIZONTAL_ALIGN_FILL));
 	groupText = new Text(this, SWT.SINGLE | SWT.BORDER);
-	gridData = new GridData(GridData.HORIZONTAL_ALIGN_FILL);
-	gridData.horizontalSpan = 2;
+	gridData = new GridData(GridData.FILL_HORIZONTAL);
 	groupText.setLayoutData(gridData);
 
 	taskDone = new Button(this, SWT.CHECK);
 	taskDone.setText("SWT task done");
-	gridData = new GridData(GridData.HORIZONTAL_ALIGN_FILL);
-	gridData.horizontalSpan = 3;
+	gridData = new GridData(GridData.FILL_HORIZONTAL);
+	gridData.horizontalSpan = 2;
 	taskDone.setLayoutData(gridData);
 
 	Composite compositeButtons = new Composite(this, SWT.NONE);
-	compositeButtons.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
+	gridData = new GridData(GridData.FILL_HORIZONTAL);
+	gridData.horizontalSpan = 2;
+	compositeButtons.setLayoutData(gridData);
 	compositeButtons.setLayout(new FillLayout());
 
 	ActionContributionItem item = new ActionContributionItem(provider.getAction(StudentAction.NEW));

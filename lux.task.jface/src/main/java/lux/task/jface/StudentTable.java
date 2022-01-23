@@ -61,13 +61,7 @@ public class StudentTable extends TableViewer {
 	TableViewerColumn doneCol = new TableViewerColumn(this, SWT.LEFT, 2);
 	doneCol.getColumn().setText("SWT done");
 	doneCol.getColumn().setWidth(100);
-	doneCol.setLabelProvider(new EmulatedNativeCheckBoxLabelProvider(doneCol.getViewer()) {
-	    @Override
-	    protected boolean isChecked(Object element) {
-		Student student = (Student) element;
-		return student.isTaskDone();
-	    }
-	});
+	doneCol.setLabelProvider(new StudentCheckBoxLabelProvider(doneCol.getViewer()));
     }
 
     class StudentContentProvider implements IStructuredContentProvider, IStudentListListener {
