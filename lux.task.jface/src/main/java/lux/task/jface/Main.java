@@ -1,8 +1,5 @@
 package lux.task.jface;
 
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
 
 import org.eclipse.jface.action.Action;
@@ -19,7 +16,6 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
-import org.eclipse.swt.widgets.TableItem;
 
 public class Main extends ApplicationWindow implements IStudentActionProvider {
     private Action quitAction;
@@ -161,6 +157,7 @@ public class Main extends ApplicationWindow implements IStudentActionProvider {
             public void run() {
                 panel.applyChanges();
                 studentList.saveStudent(panel.getStudent());
+                panel.updateButtons();
             }
         };
 
@@ -169,12 +166,16 @@ public class Main extends ApplicationWindow implements IStudentActionProvider {
                 promptSaveChanges();
 
                 studentList.removeStudent(panel.getStudent());
+                panel.setStudent(null);
+                panel.updateButtons();
             }
         };
 
         cancelAction = new Action("&Cancel") {
             public void run() {
                 panel.cancelChanges();
+                panel.updateButtons();
+            
             }
         };
 
