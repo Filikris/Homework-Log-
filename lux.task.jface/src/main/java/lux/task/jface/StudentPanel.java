@@ -147,7 +147,7 @@ public class StudentPanel extends Composite {
 
     public void updateButtons() {
         if (isChanged()) {
-            save.setEnabled(true);
+            save.setEnabled(nameText.getText().length() > 0 && groupText.getText().length() > 0);
             cancel.setEnabled(true);
         } else {
             save.setEnabled(false);
