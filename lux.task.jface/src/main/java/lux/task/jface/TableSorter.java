@@ -12,7 +12,7 @@ import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 
 public class TableSorter {
-    private TableViewer tableViewer;
+    private final TableViewer tableViewer;
 
     public TableSorter(TableViewer tableViewer) {
         this.tableViewer = tableViewer;
