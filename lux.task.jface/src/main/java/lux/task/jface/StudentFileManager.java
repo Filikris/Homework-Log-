@@ -52,32 +52,40 @@ public class StudentFileManager implements IStudentListListener {
         saveFile();
     }
 
-    public void readFile() throws IOException {
-        BufferedReader in = new BufferedReader(new LineNumberReader(new FileReader(path)));
-        String line;
-        line = in.readLine();
-        while ((line = in.readLine()) != null) {
-            StringTokenizer st = new StringTokenizer(line, "\t");
-            Student student = null;
-            if (st.hasMoreTokens()) {
-                student = list.create();
-                student.setName(st.nextToken());
-            }
+    public void readFile() {
+        try {
+            File r = new File(path);
+            if (r.exists() && r.canWrite() && r.canRead()) {
+                BufferedReader in = new BufferedReader(new LineNumberReader(new FileReader(path)));
+                String line;
+                line = in.readLine();
+                while ((line = in.readLine()) != null) {
+                    StringTokenizer st = new StringTokenizer(line, "\t");
+                    Student student = null;
+                    if (st.hasMoreTokens()) {
+                        student = list.create();
+                        student.setName(st.nextToken());
+                    }
 
-            if (st.hasMoreTokens()) {
-                student.setGroup(st.nextToken());
-            }
+                    if (st.hasMoreTokens()) {
+                        student.setGroup(st.nextToken());
+                    }
 
-            if (st.hasMoreTokens()) {
-                student.setIsTaskDone(st.nextToken().equals("DONE"));
-            }
+                    if (st.hasMoreTokens()) {
+                        student.setIsTaskDone(st.nextToken().equals("DONE"));
+                    }
 
-            if (student != null) {
-                list.saveStudent(student);
+                    if (student != null) {
+                        list.saveStudent(student);
+                    }
+                }
+                in.close();
+            } else {
+                initData();
             }
-
+        } catch (IOException e) {
+            e.getStackTrace();
         }
-        in.close();
     }
 
     public void initData() {

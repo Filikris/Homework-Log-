@@ -8,10 +8,7 @@ import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Event;
-import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Table;
-import org.eclipse.swt.widgets.TableColumn;
 
 public class StudentTable extends TableViewer {
 
@@ -22,24 +19,17 @@ public class StudentTable extends TableViewer {
         table.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
         table.setHeaderVisible(true);
         table.setLinesVisible(true);
-
         createColumns();
 
+        new TableSorter(this);
+
         setContentProvider(new StudentContentProvider());
-
-        table.addListener(SWT.Resize, new Listener() {
-
-            public void handleEvent(final Event event) {
-                for (TableColumn c : getTable().getColumns()) {
-                    c.pack();
-                }
-            }
-        });
     }
 
     private void createColumns() {
         TableViewerColumn nameCol = new TableViewerColumn(this, SWT.LEFT, 0);
         nameCol.getColumn().setText("Name");
+        nameCol.getColumn().setWidth(100);
         nameCol.setLabelProvider(new ColumnLabelProvider() {
             @Override
             public String getText(Object element) {
@@ -50,6 +40,7 @@ public class StudentTable extends TableViewer {
 
         TableViewerColumn groupCol = new TableViewerColumn(this, SWT.LEFT, 1);
         groupCol.getColumn().setText("Group");
+        groupCol.getColumn().setWidth(100);
         groupCol.setLabelProvider(new ColumnLabelProvider() {
             @Override
             public String getText(Object element) {
@@ -64,7 +55,7 @@ public class StudentTable extends TableViewer {
         doneCol.setLabelProvider(new StudentCheckBoxLabelProvider(doneCol.getViewer()));
     }
 
-    class StudentContentProvider implements IStructuredContentProvider, IStudentListListener {
+    class StudentContentProvider implements IStructuredContentProvider, IStudentListListener, IColumnContentProvider {
 
         public Object[] getElements(Object inputElement) {
             return ((StudentList) inputElement).getStudents().toArray();
@@ -93,6 +84,20 @@ public class StudentTable extends TableViewer {
             update(student, null);
         }
 
-    }
+        @Override
+        public Comparable getValue(Object element, int column) {
+            Student student = (Student) element;
+            switch (column) {
+            case 0:
+                return student.getName();
+            case 1:
+                return student.getGroup();
+            case 2:
+                return student.isTaskDone();
+            default:
+                return null;
+            }
+        }
 
+    }
 }

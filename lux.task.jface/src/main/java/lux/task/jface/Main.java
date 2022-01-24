@@ -32,13 +32,9 @@ public class Main extends ApplicationWindow implements IStudentActionProvider {
 
     public Main() {
         super(null);
-        
-        try {
-            fileManager.readFile();
-        } catch (IOException e) {
-            fileManager.initData();
-        }
-        
+
+        fileManager.readFile();
+
         studentList.addChangeListener(fileManager);
 
         createActions();
@@ -126,7 +122,7 @@ public class Main extends ApplicationWindow implements IStudentActionProvider {
         selectAction = new Action("&Select...") {
             public void run() {
                 promptSaveChanges();
-                
+
                 FileDialog dialog = new FileDialog(getShell(), SWT.SAVE);
                 dialog.setFilterNames(new String[] { "CSV Files", "All Files (*.*)" });
                 dialog.setFilterExtensions(new String[] { "*.csv", "*.*" });
@@ -134,7 +130,7 @@ public class Main extends ApplicationWindow implements IStudentActionProvider {
                 if (filePath == null) {
                     return;
                 }
-                
+
                 try {
                     fileManager.setPath(filePath);
                 } catch (IOException e) {
@@ -175,7 +171,7 @@ public class Main extends ApplicationWindow implements IStudentActionProvider {
             public void run() {
                 panel.cancelChanges();
                 panel.updateButtons();
-            
+
             }
         };
 
