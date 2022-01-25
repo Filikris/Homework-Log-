@@ -1,20 +1,23 @@
 package lux.task.jface;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.io.IOException;
 
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.Separator;
+import org.eclipse.jface.viewers.IStructuredSelection;
+import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.window.ApplicationWindow;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.SashForm;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.FileDialog;
+import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
 
-public class Main extends ApplicationWindow {
+public class Main extends ApplicationWindow implements IStudentActionProvider {
     private Action quitAction;
     private Action selectAction;
     private Action newAction;
@@ -23,144 +26,205 @@ public class Main extends ApplicationWindow {
     private Action cancelAction;
     private Action aboutAction;
     private StudentList studentList = new StudentList();
+    private StudentPanel panel;
+    private StudentTable table;
+    private StudentFileManager fileManager = new StudentFileManager(studentList);
 
     public Main() {
-	super(null);
+        super(null);
 
-	createActions();
+        fileManager.readFile();
 
-	addMenuBar();
+        studentList.addChangeListener(fileManager);
+
+        createActions();
+
+        addMenuBar();
     }
 
     @Override
     protected void configureShell(Shell shell) {
-	super.configureShell(shell);
+        super.configureShell(shell);
 
-	shell.setText("JFace homework log");
+        shell.setText("JFace homework log");
     }
 
     @Override
     protected Control createContents(Composite parent) {
-	SashForm mainPane = new SashForm(parent, SWT.HORIZONTAL);
+        SashForm mainPane = new SashForm(parent, SWT.HORIZONTAL);
 
-	StudentTable table = new StudentTable(mainPane, SWT.BORDER | SWT.FULL_SELECTION);
-	table.setInput(studentList);
+        table = new StudentTable(mainPane, SWT.BORDER | SWT.FULL_SELECTION);
+        table.setInput(studentList);
 
-	new StudentPanel(mainPane, SWT.NONE, studentList);
+        panel = new StudentPanel(mainPane, SWT.NONE, studentList, this);
 
-	parent.pack();
+        table.addSelectionChangedListener((SelectionChangedEvent event) -> {
+            promptSaveChanges();
 
-	return parent;
+            Student student = (Student) ((IStructuredSelection) event.getSelection()).getFirstElement();
+            panel.setStudent(student);
+        });
+
+        parent.pack();
+
+        return parent;
     }
 
     @Override
     protected MenuManager createMenuManager() {
-	MenuManager manager = new MenuManager();
+        MenuManager manager = new MenuManager();
 
-	manager.add(createFileMenuManager());
-	manager.add(createEditMenuManager());
-	manager.add(createHelpMenuManager());
+        manager.add(createFileMenuManager());
+        manager.add(createEditMenuManager());
+        manager.add(createHelpMenuManager());
 
-	return manager;
+        return manager;
     }
 
     private MenuManager createFileMenuManager() {
-	MenuManager manager = new MenuManager("&File");
+        MenuManager manager = new MenuManager("&File");
 
-	manager.add(selectAction);
-	manager.add(new Separator());
-	manager.add(quitAction);
+        manager.add(selectAction);
+        manager.add(new Separator());
+        manager.add(quitAction);
 
-	return manager;
+        return manager;
     }
 
     private MenuManager createEditMenuManager() {
-	MenuManager manager = new MenuManager("&Edit");
+        MenuManager manager = new MenuManager("&Edit");
 
-	manager.add(newAction);
-	manager.add(saveAction);
-	manager.add(new Separator());
-	manager.add(deleteAction);
-	manager.add(cancelAction);
+        manager.add(newAction);
+        manager.add(saveAction);
+        manager.add(new Separator());
+        manager.add(deleteAction);
+        manager.add(cancelAction);
 
-	return manager;
+        return manager;
     }
 
     private MenuManager createHelpMenuManager() {
-	MenuManager manager = new MenuManager("&Help");
+        MenuManager manager = new MenuManager("&Help");
 
-	manager.add(aboutAction);
+        manager.add(aboutAction);
 
-	return manager;
+        return manager;
     }
 
     private void createActions() {
-	quitAction = new Action("&Quit") {
-	    public void run() {
-		close();
-	    }
-	};
-	quitAction.setAccelerator(SWT.CTRL + 'Q');
+        quitAction = new Action("&Quit") {
+            public void run() {
+                close();
+            }
+        };
+        quitAction.setAccelerator(SWT.CTRL + 'Q');
 
-	selectAction = new Action("&Select...") {
-	    public void run() {
-		// TODO
-	    }
-	};
+        selectAction = new Action("&Select...") {
+            public void run() {
+                promptSaveChanges();
 
-	newAction = new Action("&New") {
-	    public void run() {	
-		studentList.addStudent();
-	    }
-	};
+                FileDialog dialog = new FileDialog(getShell(), SWT.SAVE);
+                dialog.setFilterNames(new String[] { "CSV Files", "All Files (*.*)" });
+                dialog.setFilterExtensions(new String[] { "*.csv", "*.*" });
+                String filePath = dialog.open();
+                if (filePath == null) {
+                    return;
+                }
 
-	saveAction = new Action("&Save") {
-	    public void run() {
-		// TODO
-	    }
-	};
+                try {
+                    fileManager.setPath(filePath);
+                } catch (IOException e) {
+                    MessageBox msg = new MessageBox(getShell(), SWT.ICON_ERROR);
+                    msg.setMessage("Error");
+                    msg.open();
+                }
+            }
+        };
 
-	deleteAction = new Action("&Delete") {
-	    public void run() {
-		// TODO
-	    }
-	};
+        newAction = new Action("&New") {
+            public void run() {
+                promptSaveChanges();
 
-	cancelAction = new Action("&Cancel") {
-	    public void run() {
-		// TODO
-	    }
-	};
+                panel.setStudent(studentList.create());
+            }
+        };
 
-	aboutAction = new Action("&About") {
-	    public void run() {
-		// TODO
-	    }
-	};
+        saveAction = new Action("&Save") {
+            public void run() {
+                panel.applyChanges();
+                studentList.saveStudent(panel.getStudent());
+                panel.updateButtons();
+            }
+        };
+
+        deleteAction = new Action("&Delete") {
+            public void run() {
+                promptSaveChanges();
+
+                studentList.removeStudent(panel.getStudent());
+                panel.setStudent(null);
+                panel.updateButtons();
+            }
+        };
+
+        cancelAction = new Action("&Cancel") {
+            public void run() {
+                panel.cancelChanges();
+                panel.updateButtons();
+
+            }
+        };
+
+        aboutAction = new Action("&About") {
+            public void run() {
+
+                MessageBox msg = new MessageBox(getShell(), SWT.ICON_INFORMATION);
+                msg.setMessage("Created by Kristina and Andrey");
+                msg.open();
+            }
+        };
     }
-//
-//    private List<Student> loadData() {
-//	Student one = new Student();
-//	one.setName("Yaroslav");
-//	one.setGroup("1");
-//
-//	Student two = new Student();
-//	two.setName("Kristina");
-//	two.setGroup("7");
-//
-//	List<Student> students = new ArrayList<Student>();
-//	students.add(one);
-//	students.add(two);
-//
-//	return students;
-//
-//    }
+
+    private void promptSaveChanges() {
+        if (panel.isChanged()) {
+            MessageBox msg = new MessageBox(getShell(), SWT.ICON_QUESTION | SWT.YES | SWT.NO);
+            msg.setMessage("Wanna save your changes?");
+            if (msg.open() == SWT.YES) {
+                panel.applyChanges();
+                studentList.saveStudent(panel.getStudent());
+            }
+        }
+
+    }
 
     public static void main(String[] args) {
-	Main awin = new Main();
-	awin.setBlockOnOpen(true);
-	awin.open();
+        Main awin = new Main();
+        awin.setBlockOnOpen(true);
+        awin.open();
 
-	Display.getCurrent().dispose();
+        Display.getCurrent().dispose();
+    }
+
+    @Override
+    public Action getAction(StudentAction key) {
+        if (key == StudentAction.SELECT) {
+            return selectAction;
+        }
+        if (key == StudentAction.NEW) {
+            return newAction;
+        }
+        if (key == StudentAction.SAVE) {
+            return saveAction;
+        }
+        if (key == StudentAction.DELETE) {
+            return deleteAction;
+        }
+        if (key == StudentAction.CANCEL) {
+            return cancelAction;
+        }
+        if (key == StudentAction.ABOUT) {
+            return aboutAction;
+        }
+        return null;
     }
 }

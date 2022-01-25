@@ -4,8 +4,13 @@ public class Student {
     private String name;
     private String group;
     private boolean isDone;
+    private int id;
 
-    Student() {
+    Student(int id) {
+	this.id = id;
+	name = "";
+	group = "";
+	isDone = false;
     }
 
     public String getName() {
@@ -16,7 +21,7 @@ public class Student {
 	return group;
     }
 
-    public boolean isDone() {
+    public boolean isTaskDone() {
 	return isDone;
     }
 
@@ -28,8 +33,12 @@ public class Student {
 	this.group = group;
     }
 
-    public void setIsDone(boolean done) {
+    public void setIsTaskDone(boolean done) {
 	isDone = done;
+    }
+    
+    public int getId() {
+        return id;
     }
 
 }
