@@ -134,7 +134,6 @@ public class StudentPanel extends Composite {
         student.setName(nameText.getText());
         student.setGroup(groupText.getText());
         student.setIsTaskDone(taskDone.getSelection());
-
     }
 
     public void cancelChanges() {
@@ -147,7 +146,6 @@ public class StudentPanel extends Composite {
             groupText.setText(student.getGroup());
             taskDone.setSelection(student.isTaskDone());
         }
-
     }
 
     public void updateButtons() {
@@ -155,5 +153,4 @@ public class StudentPanel extends Composite {
         provider.getAction(StudentAction.CANCEL).setEnabled(isChanged());
         provider.getAction(StudentAction.DELETE).setEnabled(student != null);
     }
-
 }
