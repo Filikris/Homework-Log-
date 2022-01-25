@@ -59,6 +59,7 @@ public class Main extends ApplicationWindow implements IStudentActionProvider {
         panel = new StudentPanel(mainPane, SWT.NONE, studentList, this);
 
         table.addSelectionChangedListener((SelectionChangedEvent event) -> {
+
             promptSaveChanges();
 
             Student student = (Student) ((IStructuredSelection) event.getSelection()).getFirstElement();
@@ -186,7 +187,14 @@ public class Main extends ApplicationWindow implements IStudentActionProvider {
     }
 
     private void promptSaveChanges() {
-        if (panel.isChanged()) {
+        if (!panel.isChanged()) {
+            return;
+        }
+        if (panel.isMissingText()) {
+            MessageBox msg = new MessageBox(getShell(), SWT.ICON_WARNING);
+            msg.setMessage("Can't save empty field!");
+            msg.open();
+        } else {
             MessageBox msg = new MessageBox(getShell(), SWT.ICON_QUESTION | SWT.YES | SWT.NO);
             msg.setMessage("Wanna save your changes?");
             if (msg.open() == SWT.YES) {
@@ -194,7 +202,6 @@ public class Main extends ApplicationWindow implements IStudentActionProvider {
                 studentList.saveStudent(panel.getStudent());
             }
         }
-
     }
 
     public static void main(String[] args) {

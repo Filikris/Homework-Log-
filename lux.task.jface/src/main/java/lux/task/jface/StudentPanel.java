@@ -88,7 +88,7 @@ public class StudentPanel extends Composite {
                 updateButtons();
             }
         });
-        
+
         updateButtons();
     }
 
@@ -122,6 +122,10 @@ public class StudentPanel extends Composite {
         return false;
     }
 
+    public boolean isMissingText() {
+        return nameText.getText().length() == 0 || groupText.getText().length() == 0;
+    }
+
     public Student getStudent() {
         return student;
     }
@@ -147,8 +151,7 @@ public class StudentPanel extends Composite {
     }
 
     public void updateButtons() {
-        provider.getAction(StudentAction.SAVE)
-                .setEnabled((nameText.getText().length() > 0 && groupText.getText().length() > 0) && isChanged());
+        provider.getAction(StudentAction.SAVE).setEnabled(!isMissingText() && isChanged());
         provider.getAction(StudentAction.CANCEL).setEnabled(isChanged());
         provider.getAction(StudentAction.DELETE).setEnabled(student != null);
     }
