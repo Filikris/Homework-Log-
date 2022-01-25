@@ -12,7 +12,7 @@ import org.eclipse.swt.widgets.Shell;
 
 /**
  * 
- * @author admin
+ * @author 
  *
  */
 public class StudentCheckBoxLabelProvider extends ColumnLabelProvider {
