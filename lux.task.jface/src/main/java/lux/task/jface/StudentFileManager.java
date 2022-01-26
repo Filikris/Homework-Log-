@@ -9,15 +9,20 @@ import java.io.IOException;
 import java.io.LineNumberReader;
 import java.nio.file.Paths;
 import java.util.StringTokenizer;
+import java.util.prefs.Preferences;
 
 public class StudentFileManager implements IStudentListListener {
 
-    private String path = Paths.get(System.getProperty("user.home"), "Desktop", "Students.csv").toString();
+    private String path;
     private StudentList list;
     private static final String[] STUDENTS_ARRAY = { "Nancy", "Larry", "Joe" };
+    private Preferences prefs = Preferences.userRoot().node(this.getClass().getName());
 
     public StudentFileManager(StudentList list) {
         this.list = list;
+        
+        path = prefs.get("PATH", Paths.get(System.getProperty("user.home"), "Desktop", "Students.csv").toString());
+        
     }
 
     private void saveFile() throws IOException {
@@ -49,6 +54,7 @@ public class StudentFileManager implements IStudentListListener {
 
     public void setPath(String path) throws IOException {
         this.path = path;
+        prefs.put("PATH", path);
         saveFile();
     }
 

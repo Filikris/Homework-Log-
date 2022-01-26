@@ -22,6 +22,7 @@ public class StudentPanel extends Composite {
     private Button save;
     private Button delete;
     private Button cancel;
+    private IStudentActionProvider provider;
     private ModifyListener modifyListener = new ModifyListener() {
         public void modifyText(ModifyEvent e) {
             updateButtons();
@@ -30,6 +31,7 @@ public class StudentPanel extends Composite {
 
     public StudentPanel(Composite parent, int style, StudentList studentList, IStudentActionProvider provider) {
         super(parent, style);
+        this.provider = provider;
 
         this.setLayout(new GridLayout(2, false));
 
@@ -67,19 +69,16 @@ public class StudentPanel extends Composite {
         item.fill(compositeButtons);
         save = (Button) item.getWidget();
         save.setLayoutData(new GridData(GridData.HORIZONTAL_ALIGN_CENTER));
-        save.setEnabled(false);
 
         item = new ActionContributionItem(provider.getAction(StudentAction.DELETE));
         item.fill(compositeButtons);
         delete = (Button) item.getWidget();
         delete.setLayoutData(new GridData(GridData.HORIZONTAL_ALIGN_CENTER));
-        delete.setEnabled(false);
 
         item = new ActionContributionItem(provider.getAction(StudentAction.CANCEL));
         item.fill(compositeButtons);
         cancel = (Button) item.getWidget();
         cancel.setLayoutData(new GridData(GridData.HORIZONTAL_ALIGN_CENTER));
-        cancel.setEnabled(false);
 
         nameText.addModifyListener(modifyListener);
         groupText.addModifyListener(modifyListener);
@@ -89,6 +88,8 @@ public class StudentPanel extends Composite {
                 updateButtons();
             }
         });
+
+        updateButtons();
     }
 
     public void setStudent(Student student) {
@@ -121,6 +122,10 @@ public class StudentPanel extends Composite {
         return false;
     }
 
+    public boolean isMissingText() {
+        return nameText.getText().length() == 0 || groupText.getText().length() == 0;
+    }
+
     public Student getStudent() {
         return student;
     }
@@ -129,7 +134,6 @@ public class StudentPanel extends Composite {
         student.setName(nameText.getText());
         student.setGroup(groupText.getText());
         student.setIsTaskDone(taskDone.getSelection());
-
     }
 
     public void cancelChanges() {
@@ -142,18 +146,11 @@ public class StudentPanel extends Composite {
             groupText.setText(student.getGroup());
             taskDone.setSelection(student.isTaskDone());
         }
-
     }
 
     public void updateButtons() {
-        if (isChanged()) {
-            save.setEnabled(nameText.getText().length() > 0 && groupText.getText().length() > 0);
-            cancel.setEnabled(true);
-        } else {
-            save.setEnabled(false);
-            cancel.setEnabled(false);
-        }
-        delete.setEnabled(student != null);
+        provider.getAction(StudentAction.SAVE).setEnabled(!isMissingText() && isChanged());
+        provider.getAction(StudentAction.CANCEL).setEnabled(isChanged());
+        provider.getAction(StudentAction.DELETE).setEnabled(student != null);
     }
-
 }
