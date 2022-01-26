@@ -11,8 +11,20 @@ import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 
+/**
+ * This class allows to sort the table. 
+ * It will allow to sort the table based on different columns. 
+ *
+ */
+
 public class TableSorter {
     private final TableViewer tableViewer;
+    
+    /**
+     * constructor
+     * 
+     * @param tableViewer
+     */
 
     public TableSorter(TableViewer tableViewer) {
         this.tableViewer = tableViewer;
@@ -23,6 +35,11 @@ public class TableSorter {
             }
         });
     }
+    
+    /**
+     * add listeners to all columns on the table
+     * @param tableViewer
+     */
 
     private void addColumnSelectionListeners(TableViewer tableViewer) {
         TableColumn[] columns = tableViewer.getTable().getColumns();
@@ -30,6 +47,11 @@ public class TableSorter {
             addColumnSelectionListener(columns[i]);
         }
     }
+    
+    /**
+     * add listener to the clicked column
+     * @param column
+     */
 
     private void addColumnSelectionListener(TableColumn column) {
         column.addSelectionListener(new SelectionAdapter() {
@@ -38,6 +60,11 @@ public class TableSorter {
             }
         });
     }
+    
+    /**
+     * select a column in the table on click
+     * @param column
+     */
 
     private void tableColumnClicked(TableColumn column) {
         Table table = column.getParent();
@@ -49,6 +76,13 @@ public class TableSorter {
         }
         tableViewer.refresh();
     }
+    
+    /**
+     * compare elements in the table
+     * @param Object e1
+     * @param Object e2
+     * @return sorted column in the table
+     */
 
     private int compareElements(Object e1, Object e2) {
         IColumnContentProvider columnValueProvider = (IColumnContentProvider) tableViewer.getContentProvider();

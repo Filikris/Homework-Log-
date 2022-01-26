@@ -11,8 +11,7 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Shell;
 
 /**
- * 
- * @author admin
+ * This class create image check box at column in the table
  *
  */
 public class StudentCheckBoxLabelProvider extends ColumnLabelProvider {
@@ -20,6 +19,7 @@ public class StudentCheckBoxLabelProvider extends ColumnLabelProvider {
     private static final String UNCHECK_KEY = "UNCHECKED";
 
     /**
+     * constructor
      * 
      * @param viewer
      */
@@ -29,6 +29,14 @@ public class StudentCheckBoxLabelProvider extends ColumnLabelProvider {
             JFaceResources.getImageRegistry().put(CHECKED_KEY, makeShot(viewer.getControl().getShell(), true));
         }
     }
+
+    /**
+     * create image check box
+     * 
+     * @param shell
+     * @param type
+     * @return image
+     */
 
     private Image makeShot(Shell shell, boolean type) {
         Shell s = new Shell(shell, SWT.NO_TRIM);
@@ -50,6 +58,10 @@ public class StudentCheckBoxLabelProvider extends ColumnLabelProvider {
         return image;
     }
 
+    /**
+     * get image
+     */
+
     public Image getImage(Object element) {
         if (isChecked(element)) {
             return JFaceResources.getImageRegistry().get(CHECKED_KEY);
@@ -58,9 +70,19 @@ public class StudentCheckBoxLabelProvider extends ColumnLabelProvider {
         }
     }
 
+    /**
+     * get text from selected element
+     */
     public String getText(Object element) {
         return "";
     }
+
+    /**
+     * status button is checked
+     * 
+     * @param element
+     * @return checked button in selected student
+     */
 
     protected boolean isChecked(Object element) {
         Student student = (Student) element;

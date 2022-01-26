@@ -1,5 +1,12 @@
 package lux.task.jface;
 
+/**
+ * An interface to student list
+ * 
+ * @author
+ *
+ */
+
 public interface IStudentListListener {
 
     public void studentAdded(Student student);

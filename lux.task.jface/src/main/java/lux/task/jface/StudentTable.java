@@ -10,7 +10,20 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Table;
 
+/**
+ * This class create table with student data
+ * 
+ * @author
+ *
+ */
 public class StudentTable extends TableViewer {
+
+    /**
+     * constructor setup the TableViewer
+     * 
+     * @param parent
+     * @param style
+     */
 
     public StudentTable(Composite parent, int style) {
         super(parent, style);
@@ -26,7 +39,12 @@ public class StudentTable extends TableViewer {
         setContentProvider(new StudentContentProvider());
     }
 
+    /**
+     * create column in the table
+     */
     private void createColumns() {
+
+        // Column 1 : Description (student name)
         TableViewerColumn nameCol = new TableViewerColumn(this, SWT.LEFT, 0);
         nameCol.getColumn().setText("Name");
         nameCol.getColumn().setWidth(100);
@@ -38,6 +56,7 @@ public class StudentTable extends TableViewer {
             }
         });
 
+        // Column 2 : Description (group number)
         TableViewerColumn groupCol = new TableViewerColumn(this, SWT.LEFT, 1);
         groupCol.getColumn().setText("Group");
         groupCol.getColumn().setWidth(100);
@@ -49,14 +68,25 @@ public class StudentTable extends TableViewer {
             }
         });
 
+        // Column 1 : Completed (Checkbox)
         TableViewerColumn doneCol = new TableViewerColumn(this, SWT.LEFT, 2);
         doneCol.getColumn().setText("SWT done");
         doneCol.getColumn().setWidth(100);
         doneCol.setLabelProvider(new StudentCheckBoxLabelProvider(doneCol.getViewer()));
     }
 
+    /**
+     * InnerClass that acts as a proxy for the StudentList providing content for the
+     * Table. It implements the IStudentListListener interface since it must
+     * register changeListeners with the StudentList. It implements the
+     * IColumnContentProvider interface since it must compare elements in the table.
+     */
+
     class StudentContentProvider implements IStructuredContentProvider, IStudentListListener, IColumnContentProvider {
 
+        /**
+         * Return the students as an array of Objects
+         */
         public Object[] getElements(Object inputElement) {
             return ((StudentList) inputElement).getStudents().toArray();
         }
@@ -72,18 +102,30 @@ public class StudentTable extends TableViewer {
             ((StudentList) getInput()).removeChangeListener(this);
         }
 
+        /**
+         * added student
+         */
         public void studentAdded(Student student) {
             add(student);
         }
 
+        /**
+         * removed student
+         */
         public void studentRemoved(Student student) {
             remove(student);
         }
 
+        /**
+         * updated student data
+         */
         public void studentUpdated(Student student) {
             update(student, null);
         }
 
+        /**
+         * get value from table for compare column
+         */
         @Override
         public Comparable getValue(Object element, int column) {
             Student student = (Student) element;

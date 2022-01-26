@@ -11,6 +11,12 @@ import java.nio.file.Paths;
 import java.util.StringTokenizer;
 import java.util.prefs.Preferences;
 
+/**
+ * This class save student data from table to file and read that back
+ * 
+ * @author
+ *
+ */
 public class StudentFileManager implements IStudentListListener {
 
     private String path;
@@ -18,6 +24,11 @@ public class StudentFileManager implements IStudentListListener {
     private static final String[] STUDENTS_ARRAY = { "Nancy", "Larry", "Joe" };
     private Preferences prefs = Preferences.userRoot().node(this.getClass().getName());
 
+    /**
+     * constructor
+     * 
+     * @param list
+     */
     public StudentFileManager(StudentList list) {
         this.list = list;
         
@@ -25,6 +36,11 @@ public class StudentFileManager implements IStudentListListener {
         
     }
 
+    /**
+     * save student data from table to file
+     * 
+     * @throws IOException
+     */
     private void saveFile() throws IOException {
 
         File fileToSave = new File(path);
@@ -52,12 +68,21 @@ public class StudentFileManager implements IStudentListListener {
         }
     }
 
+    /**
+     * put new path
+     * 
+     * @param path
+     * @throws IOException
+     */
     public void setPath(String path) throws IOException {
         this.path = path;
         prefs.put("PATH", path);
         saveFile();
     }
 
+    /**
+     * file data is read and put in a table
+     */
     public void readFile() {
         try {
             File r = new File(path);
@@ -94,6 +119,9 @@ public class StudentFileManager implements IStudentListListener {
         }
     }
 
+    /**
+     * added students by default
+     */
     public void initData() {
         Student student;
         for (int i = 0; i < 5; i++) {
@@ -104,6 +132,9 @@ public class StudentFileManager implements IStudentListListener {
         }
     };
 
+    /**
+     * added new student data to file
+     */
     @Override
     public void studentAdded(Student student) {
         try {
@@ -113,6 +144,9 @@ public class StudentFileManager implements IStudentListListener {
         }
     }
 
+    /**
+     * removed student data to file
+     */
     @Override
     public void studentRemoved(Student student) {
         try {
@@ -123,6 +157,9 @@ public class StudentFileManager implements IStudentListListener {
 
     }
 
+    /**
+     * updated new student data to file
+     */
     @Override
     public void studentUpdated(Student student) {
         try {

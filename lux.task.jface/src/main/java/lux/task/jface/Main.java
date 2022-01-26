@@ -49,6 +49,9 @@ public class Main extends ApplicationWindow implements IStudentActionProvider {
         shell.setText("JFace homework log");
     }
 
+    /**
+     * create and setup contents
+     */
     @Override
     protected Control createContents(Composite parent) {
         SashForm mainPane = new SashForm(parent, SWT.HORIZONTAL);
@@ -71,6 +74,9 @@ public class Main extends ApplicationWindow implements IStudentActionProvider {
         return parent;
     }
 
+    /**
+     * create menu
+     */
     @Override
     protected MenuManager createMenuManager() {
         MenuManager manager = new MenuManager();
@@ -82,6 +88,11 @@ public class Main extends ApplicationWindow implements IStudentActionProvider {
         return manager;
     }
 
+    
+    /**
+     * create file menu
+     * @return
+     */
     private MenuManager createFileMenuManager() {
         MenuManager manager = new MenuManager("&File");
 
@@ -92,6 +103,10 @@ public class Main extends ApplicationWindow implements IStudentActionProvider {
         return manager;
     }
 
+    /**
+     * create edit menu
+     * @return
+     */
     private MenuManager createEditMenuManager() {
         MenuManager manager = new MenuManager("&Edit");
 
@@ -104,6 +119,10 @@ public class Main extends ApplicationWindow implements IStudentActionProvider {
         return manager;
     }
 
+    /**
+     * create help menu
+     * @return
+     */
     private MenuManager createHelpMenuManager() {
         MenuManager manager = new MenuManager("&Help");
 
@@ -112,6 +131,9 @@ public class Main extends ApplicationWindow implements IStudentActionProvider {
         return manager;
     }
 
+    /**
+     * create action to menu
+     */
     private void createActions() {
         quitAction = new Action("&Quit") {
             public void run() {
@@ -180,12 +202,17 @@ public class Main extends ApplicationWindow implements IStudentActionProvider {
             public void run() {
 
                 MessageBox msg = new MessageBox(getShell(), SWT.ICON_INFORMATION);
-                msg.setMessage("Created by Kristina and Andrey");
+                msg.setMessage("The program for saving the data\n "
+                        + "of students and their tasks.\n"
+                        + "Created by Kristina and Andrey");
                 msg.open();
             }
         };
     }
 
+    /**
+     * create message box with proposal to save changes  
+     */
     private void promptSaveChanges() {
         if (!panel.isChanged()) {
             return;
@@ -212,6 +239,9 @@ public class Main extends ApplicationWindow implements IStudentActionProvider {
         Display.getCurrent().dispose();
     }
 
+    /**
+     * get action by key
+     */
     @Override
     public Action getAction(StudentAction key) {
         if (key == StudentAction.SELECT) {

@@ -14,6 +14,12 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 
+/**
+ * This class create tab with student data
+ * In this user can changes/ update student data or add new student
+ * @author 
+ *
+ */
 public class StudentPanel extends Composite {
     private Student student;
     private Text nameText;
@@ -28,6 +34,15 @@ public class StudentPanel extends Composite {
             updateButtons();
         }
     };
+    
+    /**
+     * constructor create buttons and field for enter student data
+     * 
+     * @param parent
+     * @param style
+     * @param studentList
+     * @param provider
+     */
 
     public StudentPanel(Composite parent, int style, StudentList studentList, IStudentActionProvider provider) {
         super(parent, style);
@@ -91,6 +106,11 @@ public class StudentPanel extends Composite {
 
         updateButtons();
     }
+    
+    /**
+     * add new Student in the table
+     * @param student new student
+     */
 
     public void setStudent(Student student) {
         this.student = student;
@@ -105,6 +125,11 @@ public class StudentPanel extends Composite {
         }
         updateButtons();
     }
+    
+    /**
+     * checking for changes in student data
+     * @return boolean true if data changes
+     */
 
     public boolean isChanged() {
         if (student == null) {
@@ -121,6 +146,11 @@ public class StudentPanel extends Composite {
         }
         return false;
     }
+    
+    /**
+     * get selected student in the table
+     * @return selected student
+     */
 
     public boolean isMissingText() {
         return nameText.getText().length() == 0 || groupText.getText().length() == 0;
@@ -129,12 +159,20 @@ public class StudentPanel extends Composite {
     public Student getStudent() {
         return student;
     }
+    
+    /**
+     * apply changes to student data
+     */
 
     public void applyChanges() {
         student.setName(nameText.getText());
         student.setGroup(groupText.getText());
         student.setIsTaskDone(taskDone.getSelection());
     }
+    
+    /**
+     * canceled changes in student data
+     */
 
     public void cancelChanges() {
         if (student == null) {
@@ -147,6 +185,10 @@ public class StudentPanel extends Composite {
             taskDone.setSelection(student.isTaskDone());
         }
     }
+    
+    /**
+     * enabled/disabled buttons depending on user actions
+     */
 
     public void updateButtons() {
         provider.getAction(StudentAction.SAVE).setEnabled(!isMissingText() && isChanged());
